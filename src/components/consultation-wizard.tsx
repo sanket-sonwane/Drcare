@@ -336,7 +336,7 @@ export function ConsultationWizard({
                         if (symptoms.some((s) => s.name === opt)) return
                         setSymptoms((prev) => [...prev, { name: opt, severity: "MODERATE", duration: "" }])
                       }}
-                      className="rounded-full border px-2 py-0.5 text-xs text-muted-foreground hover:bg-accent"
+                      className="min-h-10 rounded-full border px-2 py-1 text-xs text-muted-foreground hover:bg-accent"
                     >
                       + {opt}
                     </button>
@@ -357,11 +357,11 @@ export function ConsultationWizard({
                   <div className="space-y-2">
                     {symptoms.map((s, i) => (
                       <div key={i} className="flex flex-wrap items-center gap-2 rounded-md border bg-card p-2">
-                        <Input value={s.name} onChange={(e) => updateRow(setSymptoms, i, "name", e.target.value)} className="h-8 w-44" placeholder="Symptom name" />
+                        <Input value={s.name} onChange={(e) => updateRow(setSymptoms, i, "name", e.target.value)} className="h-11 w-full sm:h-8 sm:w-44" placeholder="Symptom name" />
                         <select
                           value={s.severity}
                           onChange={(e) => updateRow(setSymptoms, i, "severity", e.target.value)}
-                          className="h-8 rounded-md border border-border bg-background px-2 text-sm"
+                          className="h-11 rounded-md border border-border bg-background px-2 text-sm sm:h-8"
                           aria-label="Severity"
                         >
                           {SEVERITIES.map((sev) => (
@@ -371,10 +371,10 @@ export function ConsultationWizard({
                         <Input
                           value={s.duration}
                           onChange={(e) => updateRow(setSymptoms, i, "duration", e.target.value)}
-                          className="h-8 w-36"
+                          className="h-11 w-full sm:h-8 sm:w-36"
                           placeholder="Duration (e.g. 3 weeks)"
                         />
-                        <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => setSymptoms((prev) => prev.filter((_, x) => x !== i))} aria-label="Remove symptom">
+                        <Button type="button" size="icon" variant="ghost" className="h-11 w-11 sm:h-8 sm:w-8" onClick={() => setSymptoms((prev) => prev.filter((_, x) => x !== i))} aria-label="Remove symptom">
                           <Trash2 className="h-4 w-4 text-muted-foreground" />
                         </Button>
                       </div>
@@ -451,21 +451,21 @@ export function ConsultationWizard({
                       <select
                         value={t.type}
                         onChange={(e) => updateRow(setTreatments, i, "type", e.target.value)}
-                        className="h-8 rounded-md border border-border bg-background px-2 text-sm"
+                        className="h-11 rounded-md border border-border bg-background px-2 text-sm sm:h-8"
                         aria-label="Treatment type"
                       >
                         {TREATMENT_TYPES.map((tt) => (
                           <option key={tt.value} value={tt.value}>{tt.label}</option>
                         ))}
                       </select>
-                      <Input value={t.name} onChange={(e) => updateRow(setTreatments, i, "name", e.target.value)} className="h-8 flex-1" placeholder="Treatment name (e.g. Diclofenac gel)" />
-                      <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => setTreatments((prev) => prev.filter((_, x) => x !== i))} aria-label="Remove treatment">
+                      <Input value={t.name} onChange={(e) => updateRow(setTreatments, i, "name", e.target.value)} className="h-11 min-w-0 flex-1 sm:h-8" placeholder="Treatment name (e.g. Diclofenac gel)" />
+                      <Button type="button" size="icon" variant="ghost" className="h-11 w-11 sm:h-8 sm:w-8" onClick={() => setTreatments((prev) => prev.filter((_, x) => x !== i))} aria-label="Remove treatment">
                         <Trash2 className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      <Input value={t.dosage} onChange={(e) => updateRow(setTreatments, i, "dosage", e.target.value)} className="h-8 w-40" placeholder="Dosage (e.g. 1-0-1)" />
-                      <Input value={t.instructions} onChange={(e) => updateRow(setTreatments, i, "instructions", e.target.value)} className="h-8 flex-1" placeholder="Instructions (e.g. apply twice daily)" />
+                      <Input value={t.dosage} onChange={(e) => updateRow(setTreatments, i, "dosage", e.target.value)} className="h-11 w-full sm:h-8 sm:w-40" placeholder="Dosage (e.g. 1-0-1)" />
+                      <Input value={t.instructions} onChange={(e) => updateRow(setTreatments, i, "instructions", e.target.value)} className="h-11 min-w-0 flex-1 sm:h-8" placeholder="Instructions (e.g. apply twice daily)" />
                     </div>
                   </div>
                 ))
@@ -493,20 +493,20 @@ export function ConsultationWizard({
               ) : null}
               {outcomes.map((o, i) => (
                 <div key={i} className="grid grid-cols-1 gap-2 rounded-md border bg-card p-3 sm:grid-cols-[1.2fr_0.6fr_0.6fr_0.9fr_auto] sm:items-center">
-                  <Input value={o.metric} onChange={(e) => updateRow(setOutcomes, i, "metric", e.target.value)} className="h-8" placeholder="Metric (e.g. Pain score /10)" />
-                  <Input value={o.previousValue} onChange={(e) => updateRow(setOutcomes, i, "previousValue", e.target.value)} className="h-8" placeholder="Prev" />
-                  <Input value={o.currentValue} onChange={(e) => updateRow(setOutcomes, i, "currentValue", e.target.value)} className="h-8" placeholder="Now" />
+                  <Input value={o.metric} onChange={(e) => updateRow(setOutcomes, i, "metric", e.target.value)} className="h-11 sm:h-8" placeholder="Metric (e.g. Pain score /10)" />
+                  <Input value={o.previousValue} onChange={(e) => updateRow(setOutcomes, i, "previousValue", e.target.value)} className="h-11 sm:h-8" placeholder="Prev" />
+                  <Input value={o.currentValue} onChange={(e) => updateRow(setOutcomes, i, "currentValue", e.target.value)} className="h-11 sm:h-8" placeholder="Now" />
                   <select
                     value={o.response}
                     onChange={(e) => updateRow(setOutcomes, i, "response", e.target.value)}
-                    className="h-8 rounded-md border border-border bg-background px-2 text-sm"
+                    className="h-11 rounded-md border border-border bg-background px-2 text-sm sm:h-8"
                     aria-label="Response"
                   >
                     {(Object.keys(RESPONSE_LABEL) as (keyof typeof RESPONSE_LABEL)[]).map((k) => (
                       <option key={k} value={k} disabled={k === "UNSET"}>{RESPONSE_LABEL[k]}</option>
                     ))}
                   </select>
-                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => setOutcomes((prev) => prev.filter((_, x) => x !== i))} aria-label="Remove metric">
+                  <Button type="button" size="icon" variant="ghost" className="h-11 w-11 sm:h-8 sm:w-8" onClick={() => setOutcomes((prev) => prev.filter((_, x) => x !== i))} aria-label="Remove metric">
                     <Trash2 className="h-4 w-4 text-muted-foreground" />
                   </Button>
                 </div>

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 
 function Table({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="relative w-full overflow-auto">
+    <div className="relative w-full overflow-auto overscroll-x-contain [scrollbar-width:thin] [-webkit-overflow-scrolling:touch]">
       <table className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   )

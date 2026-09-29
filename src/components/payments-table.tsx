@@ -124,7 +124,7 @@ function RecordPaymentButton({ patientId, patientName }: { patientId: string; pa
           aria-modal="true"
           role="dialog"
         >
-          <div className="w-full max-w-md rounded-lg border bg-card p-6 text-card-foreground shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md rounded-lg border bg-card p-4 text-card-foreground shadow-lg sm:p-6" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold">Record Payment</h2>
             <p className="text-sm text-muted-foreground">for {patientName}</p>
             <form onSubmit={onSubmit} className="mt-4 space-y-4">
@@ -146,7 +146,7 @@ function RecordPaymentButton({ patientId, patientName }: { patientId: string; pa
                 <Label htmlFor="description">Description</Label>
                 <Input id="description" name="description" placeholder="Consultation fee, physio session…" />
               </div>
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>

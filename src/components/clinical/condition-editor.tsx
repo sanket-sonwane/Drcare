@@ -66,7 +66,7 @@ export function ConditionEditor({ patientId, initial }: { patientId: string; ini
               const on = items.includes(o)
               return (
                 <button key={o} type="button" aria-pressed={on} onClick={() => toggle(o)} disabled={pending}
-                  className={`rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors ${on ? 'border-primary bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:bg-accent'}`}>
+                  className={`min-h-10 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${on ? 'border-primary bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:bg-accent'}`}>
                   {o}
                 </button>
               )

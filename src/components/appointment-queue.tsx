@@ -42,7 +42,7 @@ export function AppointmentQueue({ appointments, patients, date }: {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
           {appointments.length} appointment{appointments.length === 1 ? "" : "s"} for {formatDate(date, "EEEE, d MMM yyyy")}
         </p>
@@ -148,7 +148,7 @@ function IconButton({ title, busy, onClick, children }: { title: string; busy: b
       disabled={busy}
       onClick={onClick}
       aria-label={title}
-      className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:bg-accent disabled:opacity-40"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:bg-accent disabled:opacity-40 sm:h-8 sm:w-8"
     >
       {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : children}
     </button>
@@ -195,7 +195,7 @@ function NewAppointmentButton({ patients, defaultDate }: { patients: { id: strin
       </Button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4 backdrop-blur-sm" onClick={() => setOpen(false)} aria-modal="true" role="dialog">
-          <div className="w-full max-w-md rounded-lg border bg-card p-6 text-card-foreground shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md rounded-lg border bg-card p-4 text-card-foreground shadow-lg sm:p-6" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold">Book Appointment</h2>
             <p className="text-sm text-muted-foreground">Add to today&apos;s queue, or schedule for another day.</p>
             <div className="mt-4 space-y-4">
@@ -229,7 +229,7 @@ function NewAppointmentButton({ patients, defaultDate }: { patients: { id: strin
                 <Label htmlFor="apt-reason">Reason</Label>
                 <Input id="apt-reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Why the visit?" />
               </div>
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
                 <Button type="button" onClick={save} disabled={pending || !patientId}>
                   {pending && <Loader2 className="h-4 w-4 animate-spin" />}

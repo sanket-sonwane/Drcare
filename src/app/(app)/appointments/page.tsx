@@ -48,7 +48,7 @@ export default async function AppointmentsPage({ searchParams }: PageProps<"/app
           <h1 className="text-2xl font-semibold tracking-tight">Appointments</h1>
           <p className="text-sm text-muted-foreground">Queue & follow-ups</p>
         </div>
-        <form className="flex items-center gap-2">
+        <form className="flex w-full items-center justify-end gap-2 sm:w-auto">
           <CalendarDays className="h-4 w-4 text-muted-foreground" />
           <QueueDatePicker defaultValue={date} />
           <button type="submit" className="hidden">

@@ -80,6 +80,16 @@ html {
 
 body {
   min-height: 100%;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+select,
+input,
+textarea {
+  touch-action: manipulation;
 }
 
 /* Scrollbar — subtle, calm */

@@ -52,6 +52,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/payment
           <h1 className="text-2xl font-semibold tracking-tight">Payments</h1>
           <p className="text-sm text-muted-foreground">Collected ≠ expected · charges, collections, balances in one place</p>
         </div>
+        <div className="w-full sm:w-auto">
         <CsvExportButton
           filename="payments"
           label="Export"
@@ -66,6 +67,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/payment
             String(p.amount),
           ])}
         />
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -109,7 +111,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/payment
 
       <div className="flex flex-wrap gap-2">
         {([['today', 'Today'], ['all', 'Transactions'], ['pending', 'Pending'], ['overdue', 'Overdue']] as [Tab, string][]).map(([v, l]) => (
-          <Link key={v} href={v === 'today' ? '/payments' : `/payments?tab=${v}`} className={`rounded-full border px-3 py-1 text-sm font-medium ${tab === v ? 'border-primary bg-primary text-primary-foreground' : 'bg-card hover:bg-accent'}`}>{l}</Link>
+          <Link key={v} href={v === 'today' ? '/payments' : `/payments?tab=${v}`} className={`inline-flex min-h-10 items-center rounded-full border px-3 py-1 text-sm font-medium ${tab === v ? 'border-primary bg-primary text-primary-foreground' : 'bg-card hover:bg-accent'}`}>{l}</Link>
         ))}
       </div>
 

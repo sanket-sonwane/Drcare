@@ -76,7 +76,7 @@ export default async function PatientsPage({ searchParams }: PageProps<"/patient
           <h1 className="text-2xl font-semibold tracking-tight">Patients</h1>
           <p className="text-sm text-muted-foreground">{filtered.length} patients</p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
           <PatientSearch placeholder="Search patients, IDs, phone…" />
           <CsvExportButton
             filename="patients"
@@ -109,7 +109,7 @@ export default async function PatientsPage({ searchParams }: PageProps<"/patient
             <Link
               key={f.value}
               href={f.value === "all" ? "/patients" : `/patients?filter=${f.value}`}
-              className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
+              className={`inline-flex min-h-10 items-center rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
                 active
                   ? "border-primary bg-primary text-primary-foreground"
                   : "bg-card hover:bg-accent"

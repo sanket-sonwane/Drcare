@@ -92,7 +92,7 @@ export function CareProgramsCard({
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4 backdrop-blur-sm" onClick={() => setOpen(false)} role="dialog" aria-modal="true">
-          <div className="w-full max-w-md rounded-lg border bg-card p-6 text-card-foreground shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md rounded-lg border bg-card p-4 text-card-foreground shadow-lg sm:p-6" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold">Enroll Patient to a Care Program</h2>
             <form onSubmit={onSubmit} className="mt-4 space-y-4">
               <div className="space-y-2">
@@ -111,7 +111,7 @@ export function CareProgramsCard({
                   ))}
                 </Select>
               </div>
-              <div className="flex justify-end gap-2">
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
                 <Button type="submit" disabled={pending}>{pending ? 'Saving…' : 'Enroll'}</Button>
               </div>

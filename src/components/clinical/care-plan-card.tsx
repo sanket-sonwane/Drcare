@@ -36,7 +36,7 @@ export function CarePlanPresetPicker({ onPick }: { onPick: (items: { category: s
   return (
     <div className="flex flex-wrap gap-2">
       {CARE_PLAN_PRESETS.map((p) => (
-        <button key={p.name} type="button" onClick={() => onPick(p.items)} className="rounded-full border px-3 py-1 text-xs font-medium hover:bg-accent">
+        <button key={p.name} type="button" onClick={() => onPick(p.items)} className="min-h-10 rounded-full border px-3 py-1 text-xs font-medium hover:bg-accent">
           + {p.name}
         </button>
       ))}

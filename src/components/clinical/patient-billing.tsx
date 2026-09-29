@@ -244,7 +244,7 @@ function RefundButton({ payment }: { payment: Payment }) {
       </Button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4 backdrop-blur-sm" onClick={() => setOpen(false)} role="dialog" aria-modal="true">
-          <div className="w-full max-w-md rounded-lg border bg-card p-6 text-card-foreground shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md rounded-lg border bg-card p-4 text-card-foreground shadow-lg sm:p-6" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold">Refund Payment</h2>
             <p className="text-sm text-muted-foreground">{formatMoney(payment.amount)} · {payment.description}</p>
             <form onSubmit={onSubmit} className="mt-4 space-y-4">
@@ -256,7 +256,7 @@ function RefundButton({ payment }: { payment: Payment }) {
                 <Label htmlFor="refund-reason">Reason</Label>
                 <Input id="refund-reason" name="reason" placeholder="Duplicate charge, cancelled visit…" />
               </div>
-              <div className="flex justify-end gap-2">
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
                 <Button type="submit" disabled={pending}>{pending ? 'Saving…' : 'Confirm Refund'}</Button>
               </div>
@@ -299,7 +299,7 @@ function EnrollButton({ patientId, packages, patients }: { patientId: string; pa
       </Button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4 backdrop-blur-sm" onClick={() => setOpen(false)} role="dialog" aria-modal="true">
-          <div className="w-full max-w-md rounded-lg border bg-card p-6 text-card-foreground shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md rounded-lg border bg-card p-4 text-card-foreground shadow-lg sm:p-6" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold">Enroll to a Care Program</h2>
             <p className="text-sm text-muted-foreground">{patients.find((p) => p.id === patientId)?.firstName ?? ''}</p>
             <form onSubmit={onSubmit} className="mt-4 space-y-4">
@@ -311,7 +311,7 @@ function EnrollButton({ patientId, packages, patients }: { patientId: string; pa
                   ))}
                 </Select>
               </div>
-              <div className="flex justify-end gap-2">
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
                 <Button type="submit" disabled={pending}>{pending ? 'Saving…' : 'Enroll'}</Button>
               </div>

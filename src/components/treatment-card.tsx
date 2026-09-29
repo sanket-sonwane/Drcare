@@ -69,7 +69,7 @@ export function TreatmentCard({ treatment }: { treatment: Treatment }) {
                 value={treatment.response}
                 onChange={(e) => update({ response: e.target.value })}
                 disabled={pending}
-                className="h-8 rounded-md border border-border bg-background px-2 text-sm disabled:opacity-50"
+                className="h-11 rounded-md border border-border bg-background px-2 text-sm disabled:opacity-50 sm:h-8"
                 aria-label="Update treatment response"
               >
                 {(Object.keys(RESPONSE_LABEL) as (keyof typeof RESPONSE_LABEL)[]).map((k) => (
@@ -82,7 +82,7 @@ export function TreatmentCard({ treatment }: { treatment: Treatment }) {
                 value={treatment.status}
                 onChange={(e) => update({ status: e.target.value })}
                 disabled={pending}
-                className="h-8 rounded-md border border-border bg-background px-2 text-sm disabled:opacity-50"
+                className="h-11 rounded-md border border-border bg-background px-2 text-sm disabled:opacity-50 sm:h-8"
                 aria-label="Update treatment status"
               >
                 <option value="PRESCRIBED">prescribed</option>

@@ -109,10 +109,10 @@ export function AppShell({
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
           <div className="absolute inset-0 bg-foreground/40" onClick={() => setOpen(false)} aria-hidden />
-          <aside className="absolute left-0 top-0 flex h-full w-64 flex-col overflow-y-auto bg-card px-3 py-6 shadow-xl">
+          <aside className="absolute left-0 top-0 flex h-full w-[min(18rem,calc(100vw-2rem))] flex-col overflow-y-auto bg-card px-3 py-6 shadow-xl">
             <button
               onClick={() => setOpen(false)}
-              className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+              className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
               aria-label="Close menu"
             >
               <X className="h-5 w-5" />
@@ -124,11 +124,11 @@ export function AppShell({
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Mobile top bar */}
-        <header className="flex items-center justify-between border-b bg-card px-4 py-3 lg:hidden">
+        <header className="flex min-h-14 items-center justify-between border-b bg-card px-3 py-2 lg:hidden">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+              className="flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
               aria-label="Open menu"
             >
               <Menu className="h-5 w-5" />
@@ -138,7 +138,7 @@ export function AppShell({
           <Avatar name={user.name} className="h-8 w-8 text-xs" />
         </header>
 
-        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-8 lg:px-10 lg:py-8">{children}</main>
+        <main className="mx-auto w-full max-w-7xl flex-1 px-3 py-5 sm:px-8 lg:px-10 lg:py-8">{children}</main>
       </div>
     </div>
   )

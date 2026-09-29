@@ -19,7 +19,7 @@ export function SegmentedControl({ options, value, onChange }: { options: string
           aria-checked={value === o}
           onClick={() => onChange(o)}
           className={cn(
-            "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+            "min-h-10 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
             value === o
               ? "border-primary bg-primary text-primary-foreground"
               : "bg-card text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -47,7 +47,7 @@ export function ChipMultiSelect({ options, values, onChange }: { options: string
             aria-pressed={on}
             onClick={() => toggle(o)}
             className={cn(
-              "rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
+              "min-h-10 rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
               on
                 ? "border-success bg-success/15 text-success dark:bg-emerald-950/30 dark:text-emerald-300"
                 : "bg-card text-muted-foreground hover:bg-accent"

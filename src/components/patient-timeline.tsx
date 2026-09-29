@@ -94,7 +94,7 @@ export function TimelineView({ entries }: { entries: TimelineEntry[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search history…"
-            className="h-8 w-full rounded-md border border-border bg-background pl-8 pr-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-11 w-full rounded-md border border-border bg-background pl-8 pr-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-8"
             aria-label="Search within patient history"
           />
         </div>

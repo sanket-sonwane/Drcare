@@ -35,7 +35,7 @@ export default async function SignupPage({ searchParams }: PageProps<"/signup">)
               name="name"
               type="text"
               required
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-9"
               placeholder="Dr. Sharma"
             />
           </div>
@@ -47,7 +47,7 @@ export default async function SignupPage({ searchParams }: PageProps<"/signup">)
               id="clinic"
               name="clinic"
               type="text"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-9"
               placeholder="Sharma Clinic"
             />
           </div>
@@ -59,7 +59,7 @@ export default async function SignupPage({ searchParams }: PageProps<"/signup">)
               id="specialty"
               name="specialty"
               type="text"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-9"
               placeholder="Orthopaedics"
             />
           </div>
@@ -72,7 +72,7 @@ export default async function SignupPage({ searchParams }: PageProps<"/signup">)
               name="email"
               type="email"
               required
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-9"
               placeholder="you@clinic.com"
             />
           </div>
@@ -86,13 +86,13 @@ export default async function SignupPage({ searchParams }: PageProps<"/signup">)
               type="password"
               required
               minLength={8}
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-9"
               placeholder="At least 8 characters"
             />
           </div>
           <button
             type="submit"
-            className="inline-flex h-9 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="inline-flex h-11 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-9"
           >
             {isLive() ? "Create clinic & account" : "Start (demo workspace)"}
           </button>

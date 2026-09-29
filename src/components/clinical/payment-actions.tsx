@@ -72,13 +72,13 @@ export function CollectPayment({ patientId, patientName, dueAmount, compact }: {
       <Button size="sm" onClick={() => setOpen(true)}>Collect Payment</Button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4 backdrop-blur-sm" onClick={() => setOpen(false)} role="dialog" aria-modal="true">
-          <div className="w-full max-w-md rounded-lg border bg-card p-6 text-card-foreground shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md rounded-lg border bg-card p-4 text-card-foreground shadow-lg sm:p-6" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold">Collect Payment</h2>
             <p className="text-sm text-muted-foreground">{patientName}{dueAmount ? ` · Due ${formatMoney(dueAmount)}` : ''}</p>
             <form onSubmit={submit} className="mt-4 space-y-4">
               <div className="flex gap-1.5">
                 {(['full', 'partial', 'split'] as const).map((m) => (
-                  <button key={m} type="button" onClick={() => setMode(m)} className={`rounded-full border px-3 py-1 text-xs font-medium ${mode === m ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-accent'}`}>{m === 'full' ? 'Paid' : m === 'partial' ? 'Partial' : 'Split'}</button>
+                  <button key={m} type="button" onClick={() => setMode(m)} className={`min-h-10 rounded-full border px-3 py-1 text-xs font-medium ${mode === m ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-accent'}`}>{m === 'full' ? 'Paid' : m === 'partial' ? 'Partial' : 'Split'}</button>
                 ))}
               </div>
               {mode === 'partial' && (
@@ -97,7 +97,7 @@ export function CollectPayment({ patientId, patientName, dueAmount, compact }: {
                     <button key={m.value} type="button" onClick={() => setMethod(m.value)} className={`rounded-md border px-2.5 py-1 text-xs font-medium ${method === m.value ? 'border-primary bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-accent'}`}>{m.label}</button>
                   ))}
                 </div></div>
-              <div className="flex justify-end gap-2"><Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button><Button type="submit" disabled={pending}>{pending ? 'Saving…' : 'Confirm'}</Button></div>
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"><Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button><Button type="submit" disabled={pending}>{pending ? 'Saving…' : 'Confirm'}</Button></div>
             </form>
           </div>
         </div>

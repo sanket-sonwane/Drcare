@@ -60,7 +60,7 @@ export function PatientSearch({ placeholder = "Search patients…", autoFocus = 
           onFocus={() => results.length && setOpen(true)}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="flex h-9 w-full rounded-md border border-border bg-background pl-9 pr-3 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-11 w-full rounded-md border border-border bg-background pl-9 pr-3 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-9"
           aria-label="Search patients"
         />
       </div>
