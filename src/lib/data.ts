@@ -32,14 +32,11 @@ import { isLive, getPrisma } from './db'
 // ────────────────────────────────────────────────────────────────
 
 /**
- * Fail-closed demo gate: demo data must never be served from a production
- * deployment, even if env is misconfigured. Local dev/builds are unaffected
- * (VERCEL_ENV is unset outside Vercel).
+ * Resolve the shared in-memory store whenever live database mode is disabled.
+ * Demo mode is also supported by production deployments that intentionally
+ * omit the live database configuration.
  */
 function demoStore() {
-  if (process.env.VERCEL_ENV === 'production') {
-    throw new Error('Demo mode is not available in production.')
-  }
   return getDemoStore()
 }
 

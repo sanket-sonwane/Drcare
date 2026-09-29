@@ -7,17 +7,12 @@ import type { CarePackage, Invoice, LedgerEntry, PackageEnrollment, Payment, Ref
 // Mirror style of clinical-data.ts — demo store mutates session memory,
 // live mode hits Prisma scoped to the session clinic.
 
-function demoGuard() {
-  if (process.env.VERCEL_ENV === 'production') throw new Error('Demo mode is not available in production.')
-}
-
 // ────────────────────────────────────────────────────────────────
 // Reads
 // ────────────────────────────────────────────────────────────────
 
 export async function getAllInvoices(): Promise<Invoice[]> {
   if (!isLive()) {
-    demoGuard()
     return [...(store().invoices ?? [])].sort((a, b) => b.issuedAt.localeCompare(a.issuedAt))
   }
   const prisma = getPrisma()
@@ -33,7 +28,6 @@ export async function getAllInvoices(): Promise<Invoice[]> {
 
 export async function getInvoicesForPatient(patientId: string): Promise<Invoice[]> {
   if (!isLive()) {
-    demoGuard()
     return (store().invoices ?? []).filter((i) => i.patientId === patientId).sort((a, b) => b.issuedAt.localeCompare(a.issuedAt))
   }
   const prisma = getPrisma()
@@ -49,7 +43,6 @@ export async function getInvoicesForPatient(patientId: string): Promise<Invoice[
 
 export async function getLedgerForPatient(patientId: string): Promise<LedgerEntry[]> {
   if (!isLive()) {
-    demoGuard()
     return (store().ledgerEntries ?? [])
       .filter((l) => l.patientId === patientId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
@@ -66,7 +59,6 @@ export async function getLedgerForPatient(patientId: string): Promise<LedgerEntr
 
 export async function getCarePackages(): Promise<CarePackage[]> {
   if (!isLive()) {
-    demoGuard()
     return [...(store().carePackages ?? [])]
   }
   const prisma = getPrisma()
@@ -78,7 +70,6 @@ export async function getCarePackages(): Promise<CarePackage[]> {
 
 export async function getEnrollments(patientId?: string): Promise<PackageEnrollment[]> {
   if (!isLive()) {
-    demoGuard()
     const rows = store().packageEnrollments ?? []
     return (patientId ? rows.filter((e) => e.patientId === patientId) : rows).map((e) => ({
       ...e,
@@ -135,7 +126,6 @@ export async function recordConsultationBilling(input: {
   const at = new Date().toISOString()
 
   if (!isLive()) {
-    demoGuard()
     const s = store()
     const invoice: Invoice = {
       id: uid('inv'),
@@ -243,7 +233,6 @@ export async function recordConsultationBilling(input: {
 export async function recordRefund(input: { paymentId: string; amount: number; reason?: string }): Promise<Refund> {
   const at = new Date().toISOString()
   if (!isLive()) {
-    demoGuard()
     const s = store()
     const pay = (s.payments ?? []).find((p) => p.id === input.paymentId)
     if (!pay) throw new Error('Payment not found')
@@ -290,7 +279,6 @@ export async function recordRefund(input: { paymentId: string; amount: number; r
 export async function enrollInPackage(input: { patientId: string; packageId: string; paidAmount?: number }): Promise<PackageEnrollment> {
   const paid = 0 // reserved: full amount settled through individual visits
   if (!isLive()) {
-    demoGuard()
     const s = store()
     const pkg = (s.carePackages ?? []).find((p) => p.id === input.packageId)
     if (!pkg) throw new Error('Care package not found')
@@ -318,7 +306,6 @@ export async function enrollInPackage(input: { patientId: string; packageId: str
 /** Count a consultation toward every active enrollment the patient holds (PRD §71). */
 export async function markEnrollmentVisits(patientId: string): Promise<void> {
   if (!isLive()) {
-    demoGuard()
     const s = store()
     for (const e of s.packageEnrollments ?? []) {
       if (e.patientId === patientId && e.status === 'ACTIVE') e.visitsCompleted += 1

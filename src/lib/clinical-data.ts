@@ -4,13 +4,8 @@ import { uid } from './utils'
 import { measurementsForPatient, conditionsForPatient, carePlansForPatient, demoConditions } from './demo-clinical'
 import type { CarePlan, Measurement, PatientCondition } from '@/types'
 
-function demoGuard() {
-  if (process.env.VERCEL_ENV === 'production') throw new Error('Demo mode is not available in production.')
-}
-
 export async function getMeasurements(patientId: string): Promise<Measurement[]> {
   if (!isLive()) {
-    demoGuard()
     // merge persisted session measurements stored on global demo store
     const store = getDemoStore() as unknown as { measurements?: Measurement[] }
     const extra = (store.measurements ?? []).filter((m) => m.patientId === patientId)
@@ -28,7 +23,6 @@ export async function getMeasurements(patientId: string): Promise<Measurement[]>
 
 export async function getConditions(patientId: string): Promise<PatientCondition[]> {
   if (!isLive()) {
-    demoGuard()
     const store = getDemoStore() as unknown as { conditions?: PatientCondition[] }
     // runtime edits override the scaffold: if any condition was toggled for
     // this patient, the store slice is authoritative — otherwise seed.
@@ -45,7 +39,6 @@ export async function getConditions(patientId: string): Promise<PatientCondition
 export async function setConditions(patientId: string, conditions: string[]): Promise<PatientCondition[]> {
   const at = new Date().toISOString()
   if (!isLive()) {
-    demoGuard()
     const store = getDemoStore() as unknown as { conditions?: PatientCondition[] }
     const prev = (store.conditions ?? []).filter((c) => c.patientId === patientId)
     const next: PatientCondition[] = conditions.map((condition) => {
@@ -75,7 +68,6 @@ export async function setConditions(patientId: string, conditions: string[]): Pr
 
 export async function getCarePlans(patientId: string): Promise<CarePlan[]> {
   if (!isLive()) {
-    demoGuard()
     return carePlansForPatient(patientId)
   }
   const prisma = getPrisma()
@@ -109,7 +101,6 @@ export async function saveVisitMeasurements(input: { patientId: string; visitId?
   }
   if (!entries.length) return
   if (!isLive()) {
-    demoGuard()
     const store = getDemoStore() as unknown as { measurements?: Measurement[] }
     store.measurements = [...(store.measurements ?? []), ...entries]
     return
@@ -126,7 +117,6 @@ export async function saveVisitMeasurements(input: { patientId: string; visitId?
 /** All patient conditions in the clinic (for condition-based list filters). */
 export async function getAllConditions(): Promise<PatientCondition[]> {
   if (!isLive()) {
-    demoGuard()
     const store = getDemoStore() as unknown as { conditions?: PatientCondition[] }
     if (store.conditions?.length) return store.conditions
     return demoConditions.map((c) => ({ ...c }))
