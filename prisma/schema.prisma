@@ -1,0 +1,698 @@
+// DoctorCare — Patient Story & Clinic Management Platform
+// All timestamps stored in UTC. Currency amounts stored in minor units (paise).
+// Every record carries clinicId for tenant isolation.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Organization & Users ─────────────────────────────────────────────
+
+model Clinic {
+  id        String   @id @default(cuid())
+  name      String
+  specialty String?
+  phone     String?
+  address   String?
+  timezone  String   @default("Asia/Kolkata")
+  currency  String   @default("INR")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users        User[]
+  patients     Patient[]
+  appointments Appointment[]
+  documents    Document[]
+  templates    ConsultationTemplate[]
+  visitTemplates VisitTemplate[]
+  invoices     Invoice[]
+  payments     Payment[]
+  measurements Measurement[]
+  carePlans    CarePlan[]
+  feePresets   FeePreset[]
+  refunds      Refund[]
+  ledgerEntries LedgerEntry[]
+  carePackages CarePackage[]
+}
+
+enum Role {
+  DOCTOR
+  RECEPTIONIST
+  ADMIN
+}
+
+model User {
+  id          String    @id @default(cuid())
+  clinicId    String
+  clinic      Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  name        String
+  email       String    @unique
+  role        Role      @default(DOCTOR)
+  specialty   String?
+  phone       String?
+  avatarUrl   String?
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  consultations Consultation[]
+  appointments  Appointment[]  @relation("DoctorAppointments")
+  documents     Document[]
+  payments      Payment[]      @relation("ProcessorPayments")
+  auditLogs     AuditLog[]
+  notifications Notification[]
+}
+
+// ── Patient ───────────────────────────────────────────────────────────
+
+enum PatientStatus {
+  ACTIVE
+  ARCHIVED
+  NEW
+  IMPROVING
+  NO_RESPONSE
+  WORSENED
+  RECOVERED
+}
+
+model Patient {
+  id               String        @id @default(cuid())
+  patientCode      String        @unique
+  clinicId         String
+  clinic           Clinic        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  firstName        String
+  lastName         String?
+  dateOfBirth      DateTime?
+  gender           String?
+  phone            String?
+  email            String?
+  address          String?
+  emergencyContact String?
+  bloodGroup       String?
+  occupation       String?
+  status           PatientStatus @default(ACTIVE)
+  notes            String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  consultations Consultation[]
+  appointments  Appointment[]
+  treatments    Treatment[]
+  followUps     FollowUp[]
+  payments      Payment[]
+  invoices      Invoice[]
+  documents     Document[]
+  prescription  Prescription[]
+  conditions    PatientCondition[]
+  measurements  Measurement[]
+  carePlans     CarePlan[]
+  ledgerEntries LedgerEntry[]
+  packageEnrollments PackageEnrollment[]
+
+  @@index([clinicId, firstName])
+  @@index([clinicId, patientCode])
+  @@index([clinicId, phone])
+}
+
+// ── Appointments & Queue ───────────────────────────────────────────────
+
+enum AppointmentType {
+  NEW_VISIT
+  FOLLOW_UP
+  REVIEW
+  CONSULTATION
+  WALK_IN
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CHECKED_IN
+  WAITING
+  IN_CONSULTATION
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  clinicId    String
+  clinic      Clinic            @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId   String
+  patient     Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId    String?
+  doctor      User?             @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  date        DateTime
+  type        AppointmentType   @default(NEW_VISIT)
+  status      AppointmentStatus @default(SCHEDULED)
+  reason      String?
+  notes       String?
+  queueNumber Int?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  consultations Consultation[]
+
+  @@index([clinicId, date])
+  @@index([clinicId, status])
+}
+
+// ── Consultation ───────────────────────────────────────────────────────
+
+enum ConsultationStatus {
+  DRAFT
+  COMPLETED
+  AI_REVIEW
+}
+
+model Consultation {
+  id               String             @id @default(cuid())
+  patientId        String
+  patient          Patient            @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId         String
+  doctor           User               @relation(fields: [doctorId], references: [id])
+  appointmentId    String?
+  appointment      Appointment?       @relation(fields: [appointmentId], references: [id])
+  date             DateTime           @default(now())
+  chiefComplaint   String?
+  clinicalNotes    String?
+  assessment       String?
+  treatmentSummary String?
+  status           ConsultationStatus @default(COMPLETED)
+  isAiGenerated    Boolean            @default(false)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  symptoms      Symptom[]
+  treatments    Treatment[]
+  outcomes      Outcome[]
+  followUps     FollowUp[]
+  invoices      Invoice[]
+  prescriptions Prescription[]
+  documents     Document[]
+  measurements  Measurement[]
+  carePlans     CarePlan[]
+  lifestyleEntries LifestyleEntry[]
+
+  @@index([patientId, date])
+}
+
+enum SymptomSeverity {
+  MILD
+  MODERATE
+  SEVERE
+  UNSPECIFIED
+}
+
+model Symptom {
+  id             String          @id @default(cuid())
+  consultationId String
+  consultation   Consultation    @relation(fields: [consultationId], references: [id], onDelete: Cascade)
+  name           String
+  severity       SymptomSeverity @default(UNSPECIFIED)
+  duration       String?
+  notes          String?
+  createdAt      DateTime        @default(now())
+}
+
+enum TreatmentType {
+  MEDICATION
+  THERAPY
+  EXERCISE
+  PROCEDURE
+  LIFESTYLE
+  OTHER
+}
+
+enum TreatmentStatus {
+  PRESCRIBED
+  ONGOING
+  COMPLETED
+  DISCONTINUED
+}
+
+enum TreatmentResponse {
+  UNSET
+  IMPROVING
+  STABLE
+  NO_RESPONSE
+  WORSENED
+}
+
+model Treatment {
+  id             String            @id @default(cuid())
+  patientId      String
+  patient        Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  consultationId String?
+  consultation   Consultation?     @relation(fields: [consultationId], references: [id], onDelete: SetNull)
+  type           TreatmentType
+  name           String
+  instructions   String?
+  dosage         String?
+  startDate      DateTime?
+  endDate        DateTime?
+  status         TreatmentStatus   @default(PRESCRIBED)
+  response       TreatmentResponse @default(UNSET)
+  notes          String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([patientId])
+}
+
+enum OverallResponse {
+  IMPROVED
+  STABLE
+  NO_RESPONSE
+  WORSENED
+}
+
+model Outcome {
+  id             String          @id @default(cuid())
+  consultationId String
+  consultation   Consultation    @relation(fields: [consultationId], references: [id], onDelete: Cascade)
+  metric         String          @default("Pain")
+  previousValue  String?
+  currentValue   String?
+  response       OverallResponse @default(STABLE)
+  notes          String?
+  createdAt      DateTime        @default(now())
+}
+
+enum FollowUpStatus {
+  OPEN
+  DUE
+  OVERDUE
+  COMPLETED
+  MISSED
+  CANCELLED
+}
+
+model FollowUp {
+  id             String         @id @default(cuid())
+  patientId      String
+  patient        Patient        @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  consultationId String?
+  consultation   Consultation?  @relation(fields: [consultationId], references: [id], onDelete: SetNull)
+  scheduledDate  DateTime
+  reason         String?
+  status         FollowUpStatus @default(OPEN)
+  reminderDays   Int            @default(1)
+  completedAt    DateTime?
+  notedBy        String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([scheduledDate, status])
+}
+
+// ── Payments & Billing ─────────────────────────────────────────────────
+
+enum PaymentMethod {
+  CASH
+  UPI
+  CARD
+  BANK_TRANSFER
+  OTHER
+}
+
+enum PaymentStatus {
+  PAID
+  PENDING
+  PARTIAL
+  OVERDUE
+  REFUNDED
+  CANCELLED
+}
+
+model PaymentSplit {
+  id        String        @id @default(cuid())
+  paymentId String
+  payment   Payment       @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  method    PaymentMethod
+  amount    Int
+  createdAt DateTime      @default(now())
+}
+
+model Payment {
+  id                   String        @id @default(cuid())
+  clinicId             String
+  clinic               Clinic        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId            String
+  patient              Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  invoiceId            String?
+  invoice              Invoice?      @relation(fields: [invoiceId], references: [id])
+  consultationId       String?
+  packageEnrollmentId  String?
+  packageEnrollment    PackageEnrollment? @relation(fields: [packageEnrollmentId], references: [id], onDelete: SetNull)
+  recordedById         String?
+  recordedBy           User?         @relation("ProcessorPayments", fields: [recordedById], references: [id])
+  amount               Int // minor units (₹800 = 80000)
+  method               PaymentMethod @default(CASH)
+  status               PaymentStatus @default(PENDING)
+  transactionReference String?
+  description          String?
+  paymentDate          DateTime      @default(now())
+  dueDate              DateTime?
+  createdAt            DateTime      @default(now())
+  splits               PaymentSplit[]
+  refunds              Refund[]
+
+  @@index([clinicId, paymentDate])
+  @@index([patientId])
+  @@index([clinicId, status])
+}
+
+model Invoice {
+  id             String            @id @default(cuid())
+  invoiceNo      String            @unique
+  clinicId       String
+  clinic         Clinic            @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  consultationId String?
+  consultation   Consultation?     @relation(fields: [consultationId], references: [id], onDelete: SetNull)
+  subtotal       Int               @default(0)
+  discount       Int               @default(0)
+  discountReason String?
+  totalAmount    Int
+  paidAmount     Int               @default(0)
+  status         PaymentStatus     @default(PENDING)
+  issuedAt       DateTime          @default(now())
+  dueDate        DateTime?
+  lineItems      InvoiceLineItem[]
+  payments       Payment[]
+}
+
+model InvoiceLineItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  amount      Int
+  quantity    Int     @default(1)
+}
+
+// ── Documents & Prescriptions ──────────────────────────────────────────
+
+enum DocumentType {
+  LAB_REPORT
+  IMAGING_REPORT
+  REFERRAL
+  PRESCRIPTION
+  SCAN
+  OTHER
+}
+
+model Document {
+  id             String        @id @default(cuid())
+  clinicId       String
+  clinic         Clinic        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  consultationId String?
+  consultation   Consultation? @relation(fields: [consultationId], references: [id], onDelete: SetNull)
+  uploadedById   String?
+  uploadedBy     User?         @relation(fields: [uploadedById], references: [id])
+  name           String
+  type           DocumentType  @default(OTHER)
+  url            String?
+  mimeType       String?
+  size           Int?
+  uploadedAt     DateTime      @default(now())
+}
+
+model Prescription {
+  id             String        @id @default(cuid())
+  patientId      String
+  patient        Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  consultationId String?
+  consultation   Consultation? @relation(fields: [consultationId], references: [id], onDelete: SetNull)
+  medicine       String
+  dosage         String?
+  frequency      String?
+  duration       String?
+  instructions   String?
+  createdAt      DateTime      @default(now())
+}
+
+// ── Templates ──────────────────────────────────────────────────────────
+
+model ConsultationTemplate {
+  id            String   @id @default(cuid())
+  clinicId      String
+  clinic        Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  name          String
+  specialty     String?
+  symptoms      String[] @default([])
+  assessments   String[] @default([])
+  treatments    String[] @default([])
+  notesTemplate String?
+  isDefault     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
+// ── Preventive / Metabolic / Lifestyle OS (v2) ─────────────────────────
+
+enum MeasurementSource {
+  CLINIC
+  HOME
+  LAB
+  DEVICE
+}
+
+model Measurement {
+  id        String            @id @default(cuid())
+  clinicId  String
+  clinic    Clinic            @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId String
+  patient   Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  visitId   String?
+  visit     Consultation?     @relation(fields: [visitId], references: [id], onDelete: SetNull)
+  type      String // weight | bp_systolic | bp_diastolic | heart_rate | waist | fasting_glucose | hba1c | ldl | hdl | triglycerides | tsh | pain_score ...
+  value     Float
+  valueText String?
+  unit      String?
+  recordedAt DateTime         @default(now())
+  source    MeasurementSource @default(CLINIC)
+  notes     String?
+
+  @@index([patientId, type, recordedAt])
+  @@index([clinicId, recordedAt])
+}
+
+model PatientCondition {
+  id        String   @id @default(cuid())
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  condition String // Hypertension | Diabetes | Obesity | Thyroid | PCOD_PCOS | Joint_Arthritis | Preventive_Cardiology ...
+  status    String   @default("ACTIVE")
+  diagnosedAt DateTime?
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@index([patientId])
+}
+
+enum LifestyleCategory {
+  NUTRITION
+  ACTIVITY
+  SLEEP
+  STRESS
+  SMOKING
+  ALCOHOL
+  MEDICATION_ADHERENCE
+  MONITORING
+}
+
+model LifestyleEntry {
+  id             String            @id @default(cuid())
+  patientId      String
+  consultationId String?
+  consultation   Consultation?     @relation(fields: [consultationId], references: [id], onDelete: SetNull)
+  category       LifestyleCategory
+  rating         String? // Poor | Fair | Good | Excellent | Low | Moderate | High ...
+  tags           String[]          @default([])
+  notes          String?
+  recordedAt     DateTime          @default(now())
+
+  @@index([consultationId])
+}
+
+enum CarePlanStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  DISCONTINUED
+}
+
+model CarePlan {
+  id             String         @id @default(cuid())
+  clinicId       String
+  clinic         Clinic         @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient        @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  consultationId String?
+  consultation   Consultation?  @relation(fields: [consultationId], references: [id], onDelete: SetNull)
+  name           String         @default("Care Plan")
+  preset         String?
+  status         CarePlanStatus @default(ACTIVE)
+  nextReview     DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  items          CarePlanItem[]
+
+  @@index([patientId, status])
+}
+
+model CarePlanItem {
+  id         String   @id @default(cuid())
+  carePlanId String
+  carePlan   CarePlan @relation(fields: [carePlanId], references: [id], onDelete: Cascade)
+  category   String // Nutrition | Activity | Sleep | Monitoring | Medication | ...
+  title      String
+  detail     String?
+  adherence  String? // Good | Partial | Poor ...
+  isFavorite Boolean  @default(false)
+  done       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model VisitTemplate {
+  id             String   @id @default(cuid())
+  clinicId       String?
+  clinic         Clinic?  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  key            String // NEW_PATIENT | PREVENTIVE_CARDIOLOGY | HYPERTENSION | DIABETES | WEIGHT | THYROID | PCOD | JOINT | LIFESTYLE | CUSTOM
+  name           String
+  specialty      String?
+  sections       Json // [{key,title,fields:[{key,label,type,options,unit,required}]}]
+  defaultFee     Int      @default(0)
+  favoriteOrder  Int      @default(0)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  @@unique([clinicId, key])
+}
+
+model FeePreset {
+  id          String  @id @default(cuid())
+  clinicId    String
+  clinic      Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  visitType   String
+  label       String
+  amount      Int
+  doctorId    String?
+  branch      String?
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([clinicId, visitType])
+}
+
+model Refund {
+  id        String   @id @default(cuid())
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  paymentId String
+  payment   Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  amount    Int
+  reason    String?
+  createdBy String?
+  createdAt DateTime @default(now())
+}
+
+enum LedgerKind {
+  CHARGE
+  PAYMENT
+  DISCOUNT
+  REFUND
+  CREDIT
+}
+
+model LedgerEntry {
+  id          String     @id @default(cuid())
+  clinicId    String
+  clinic      Clinic     @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId   String
+  patient     Patient    @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  kind        LedgerKind
+  amount      Int
+  reference   String?
+  invoiceId   String?
+  paymentId   String?
+  description String?
+  createdAt   DateTime   @default(now())
+
+  @@index([patientId, createdAt])
+  @@index([clinicId, createdAt])
+}
+
+model CarePackage {
+  id          String   @id @default(cuid())
+  clinicId    String
+  clinic      Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  name        String // 12-Week Metabolic Program
+  description String?
+  price       Int
+  visitCount  Int      @default(1)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  enrollments PackageEnrollment[]
+}
+
+model PackageEnrollment {
+  id              String       @id @default(cuid())
+  packageId       String
+  package         CarePackage  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  patientId       String
+  patient         Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  price           Int
+  paidAmount      Int          @default(0)
+  visitsCompleted Int          @default(0)
+  status          String       @default("ACTIVE")
+  startedAt       DateTime     @default(now())
+  payments        Payment[]
+}
+
+// ── Notifications ──────────────────────────────────────────────────────
+
+enum NotificationType {
+  FOLLOW_UP
+  APPOINTMENT
+  PAYMENT
+  TASK
+  SYSTEM
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType @default(TASK)
+  title     String
+  body      String?
+  link      String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+}
+
+// ── Audit Trail ────────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  clinicId   String
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String
+  entityType String
+  entityId   String
+  changes    Json?
+  createdAt  DateTime @default(now())
+}
